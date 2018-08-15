@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Mini-Paint</title>
+		<style>
+		/*
+		global reset
+		*/
+			* {
+				margin: 0;
+				padding: 0;
+			}
+		/*
+		runde kanten und schatten fuer alle browser, margin
+		*/
+			canvas {			
+				border-radius: 10px 10px 10px 10px;
+				-moz-border-radius: 10px 10px 10px 10px;
+				-webkit-border-radius: 10px 10px 10px 10px;
+				-webkit-box-shadow: 0px 0px 16px -1px rgba(0,0,0,0.75);
+				-moz-box-shadow: 0px 0px 16px -1px rgba(0,0,0,0.75);
+				box-shadow: 0px 0px 16px -1px rgba(0,0,0,0.75);
+				margin: 20px 20px;
+			}
+			
+			li {
+				list-style: none;
+				display: inline-block;
+			}
+			
+			#nav {
+				position: absolute;
+				left: 830px;
+				top: 20px;
+				padding: 20px;
+				-webkit-box-shadow: 0px 0px 16px -1px rgba(0,0,0,0.75);
+				-moz-box-shadow: 0px 0px 16px -1px rgba(0,0,0,0.75);
+				box-shadow: 0px 0px 16px -1px rgba(0,0,0,0.75);
+				border-radius: 10px 10px 10px 10px;
+				-moz-border-radius: 10px 10px 10px 10px;
+				-webkit-border-radius: 10px 10px 10px 10px;
+			}
+			
+			input[type="number"] {
+				display: inline-block;
+				width: 40px;
+				margin-top: 10px;
+			}
+			
+			#farbe {
+				width: 40px;
+				height: 40px;
+				background-color: black;
+				margin: 0 auto;		
+				border: 1px solid black;	
+			}
+		</style>
+	</head>
+	
+	<body>
+		<canvas id="map" width="800" height="600" onclick="drawElement(fig)"></canvas>
+		<div id="nav">
+			<ul>
+				<li><img src="img/kreis.jpg" alt="" onclick="fig = 1;"></li>
+				<li><img src="img/rechteck.jpg" alt="" onclick="fig = 2;"></li>
+				<li><img src="img/radierer.jpg" alt="" onclick="ctx.clearRect(0,0,canvas.width,canvas.height);"></li>
+				<br><br>
+
+				<div id="farbe"></div>
+				<br>
+				R <input type="number" id="red-number" min="0" max="255" onchange="updateTextInput(this.value,'r');">
+				<br><br>
+				G <input type="number" id="green-number" min="0" max="255" onchange="updateTextInput(this.value,'g');">
+				<br><br>
+				B <input type="number" id="blue-number" min="0" max="255" onchange="updateTextInput(this.value,'b');">
+				
+				<br><br><br><br>Size: <span id="size">1</span>
+				<br>
+				<input type="range" id="size-range" min="1" max="100" value="0" onchange="updateSize(this.value);">
+			</ul>
+		</div>
+		
+		<script>
+			var canvas = document.getElementById("map");
+			var fig = 1;
+			var mouseX = 0;
+			var mouseY = 0;
+			var size = 0;
+			
+			var rNumber = document.getElementById("red-number");
+			var gNumber = document.getElementById("green-number");
+			var bNumber = document.getElementById("blue-number");
+			
+			rNumber.value = 0;
+			gNumber.value = 0;
+			bNumber.value = 0;
+			
+			var r = 0;
+			var g = 0;
+			var b = 0;
+			
+			ctx = canvas.getContext("2d");
+			
+			function drawElement(fig) {		// holt mausposition und zeichnet an dieser element welches angewaehlt ist
+				mousePos();
+				switch (fig){
+					case 1:					// kreis zeichnen
+						ctx.beginPath();
+						ctx.arc(mouseX,mouseY,size/2,0,2*Math.PI,false);
+						ctx.fill();
+						break;
+					case 2:					//rechteck zeichnen (farbe wird in updateColor schon festgelegt)
+						ctx.fillRect(mouseX,mouseY,size,size);
+						break;
+				}
+			}
+			
+			function mousePos() {
+				var e = window.event;
+
+				mouseX = e.clientX - 20; //-20 wegen canvas margin
+				mouseY = e.clientY - 20;
+			}
+			
+			function updateTextInput(val,c) {		//aenderung der farbwerte in variablen speichern
+				val = parseInt(val);
+
+				switch(c) {
+					case "r":
+						rNumber.value = val;
+						r = val;
+						break;
+					case "g":
+						gNumber.value = val;
+						g = val;
+						break;
+					case "b":
+						bNumber.value = val;
+						b = val;
+						break;
+				}
+				updateColor();
+			}
+			
+			function updateColor() {	// je nach rgb eingabe farbdisplay und fill style aendern
+				document.getElementById("farbe").style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")";
+				ctx.fillStyle = "rgb("+r+","+g+","+b+")";
+				ctx.strokeStyle = "rgb("+r+","+g+","+b+")";
+			}
+			
+			function updateSize(val) {		//aenderung der groeße in variable speichern
+				document.getElementById("size").innerHTML=val;
+				val = parseInt(val);
+				size = val*4;
+			} 
+		</script>
+	</body>
+</html>
